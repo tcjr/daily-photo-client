@@ -39,10 +39,22 @@ echo "Made button_monitor.py executable"
 SERVICE_FILE="$SCRIPT_DIR/daily-photo-button.service"
 TEMP_SERVICE="/tmp/daily-photo-button.service"
 
+# Determine the correct Python executable
+if [[ -f "$SCRIPT_DIR/venv/bin/python" ]]; then
+    PYTHON_EXEC="$SCRIPT_DIR/venv/bin/python"
+elif [[ -f "$SCRIPT_DIR/venv/bin/python3" ]]; then
+    PYTHON_EXEC="$SCRIPT_DIR/venv/bin/python3"
+else
+    PYTHON_EXEC="$(which python3)"
+fi
+
+echo "Using Python executable: $PYTHON_EXEC"
+
 # Replace placeholder paths and user with actual values
 sed -e "s|/home/pi/daily-photo-client|$SCRIPT_DIR|g" \
     -e "s|User=pi|User=$CURRENT_USER|g" \
     -e "s|Group=pi|Group=$CURRENT_USER|g" \
+    -e "s|/home/pi/daily-photo-client/venv/bin/python|$PYTHON_EXEC|g" \
     "$SERVICE_FILE" > "$TEMP_SERVICE"
 
 # Install the service file
