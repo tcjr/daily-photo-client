@@ -9,13 +9,14 @@ echo "Setting up Daily Photo Button Monitor Service..."
 
 # Check if running as root
 if [[ $EUID -eq 0 ]]; then
-   echo "This script should not be run as root. Please run as the pi user."
+   echo "This script should not be run as root. Please run as a regular user."
    exit 1
 fi
 
 # Get the current directory (where the script is located)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVICE_NAME="daily-photo-button"
+CURRENT_USER="$(whoami)"
 
 echo "Working directory: $SCRIPT_DIR"
 
@@ -38,8 +39,11 @@ echo "Made button_monitor.py executable"
 SERVICE_FILE="$SCRIPT_DIR/daily-photo-button.service"
 TEMP_SERVICE="/tmp/daily-photo-button.service"
 
-# Replace placeholder paths with actual paths
-sed "s|/home/pi/daily-photo-client|$SCRIPT_DIR|g" "$SERVICE_FILE" > "$TEMP_SERVICE"
+# Replace placeholder paths and user with actual values
+sed -e "s|/home/pi/daily-photo-client|$SCRIPT_DIR|g" \
+    -e "s|User=pi|User=$CURRENT_USER|g" \
+    -e "s|Group=pi|Group=$CURRENT_USER|g" \
+    "$SERVICE_FILE" > "$TEMP_SERVICE"
 
 # Install the service file
 echo "Installing systemd service..."
