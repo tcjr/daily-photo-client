@@ -32,6 +32,7 @@
       "enabled": false
     }
   },
-  "button_debounce_delay": 0.5,
-  "daily_photo_script": "./daily_photo.py"
+  "button_debounce_delay": 1.0,
+  "daily_photo_script": "./daily_photo.py",
+  "button_debug_logging": false
 }

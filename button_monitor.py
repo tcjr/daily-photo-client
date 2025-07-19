@@ -190,19 +190,60 @@ class ButtonMonitor:
             
             debounce_delay = self.config.get("button_debounce_delay", 0.5)
             last_press_time = {}
+            button_states = {}  # Track button pressed state
+            
+            # Initialize button states to False (not pressed)
+            for gpio_number in self.gpio_numbers:
+                button_states[gpio_number] = False
             
             while True:
                 for event in self.request.read_edge_events():
                     current_time = time.time()
                     gpio_number = self.gpio_numbers[self.offsets.index(event.line_offset)]
                     
-                    # Simple debouncing
+                    # Enhanced debouncing with state tracking
+                    debug_logging = self.config.get("button_debug_logging", False)
+                    
                     if gpio_number in last_press_time:
-                        if current_time - last_press_time[gpio_number] < debounce_delay:
+                        time_since_last = current_time - last_press_time[gpio_number]
+                        if time_since_last < debounce_delay:
+                            if debug_logging:
+                                self.logger.info(f"GPIO {gpio_number}: Ignoring bounce event ({time_since_last:.3f}s < {debounce_delay}s)")
                             continue
                     
-                    last_press_time[gpio_number] = current_time
-                    self.handle_button_press(event)
+                    # Check if this is a new button press (was not pressed before)
+                    if not button_states[gpio_number]:
+                        button_states[gpio_number] = True
+                        last_press_time[gpio_number] = current_time
+                        if debug_logging:
+                            self.logger.info(f"GPIO {gpio_number}: New button press detected")
+                        self.handle_button_press(event)
+                    else:
+                        if debug_logging:
+                            self.logger.info(f"GPIO {gpio_number}: Button already pressed, ignoring duplicate event")
+                    
+                    # Reset button state after debounce delay to allow new presses
+                    # This runs in a separate check to prevent immediate re-triggering
+                    
+                # Check for button releases (reset states for buttons that should be released)
+                current_time = time.time()
+                debug_logging = self.config.get("button_debug_logging", False)
+                for gpio_number in list(button_states.keys()):
+                    if button_states[gpio_number] and gpio_number in last_press_time:
+                        if current_time - last_press_time[gpio_number] > debounce_delay:
+                            # Read current GPIO state to see if button is still pressed
+                            try:
+                                offset = self.offsets[self.gpio_numbers.index(gpio_number)]
+                                current_gpio_state = self.request.get_value(offset)
+                                # If GPIO is high (button released), reset state
+                                if current_gpio_state == 1:  # Pull-up means 1 = released, 0 = pressed
+                                    button_states[gpio_number] = False
+                                    if debug_logging:
+                                        self.logger.info(f"GPIO {gpio_number}: Button released, ready for new press")
+                            except Exception as e:
+                                if debug_logging:
+                                    self.logger.info(f"GPIO {gpio_number}: Could not read state, resetting: {e}")
+                                button_states[gpio_number] = False
                     
         except KeyboardInterrupt:
             self.logger.info("Button monitor stopped by user")
