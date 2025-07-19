@@ -1,6 +1,7 @@
 # Agent Guidelines for Daily Photo Client
 
 ## Build/Test Commands
+
 - **Run application**: `python3 daily_photo.py`
 - **Install dependencies**: `pip install -r requirements.txt`
 - **Setup environment**: `./install.sh` (creates venv and installs deps)
@@ -8,6 +9,7 @@
 - **Check logs**: `tail -f logs/daily-photo.log`
 
 ## Code Style Guidelines
+
 - **Language**: Python 3 with type hints where beneficial
 - **Imports**: Standard library first, then third-party (requests, PIL, inky), then local
 - **Classes**: PascalCase (e.g., `DailyPhotoDisplay`)
@@ -22,6 +24,7 @@
 - **Dependencies**: Minimal external deps (inky, Pillow, requests only)
 
 ## Project Structure
+
 - Single-file application (`daily_photo.py`) with class-based architecture
 - JSON configuration (`config.json`) for all settings
 - Virtual environment for dependency isolation

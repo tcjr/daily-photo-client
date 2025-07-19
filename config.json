@@ -5,5 +5,15 @@
   "retry_attempts": 3,
   "retry_delay": 5,
   "image_cache_dir": "./cache",
-  "log_file": "./logs/daily-photo.log"
+  "log_file": "./logs/daily-photo.log",
+  "buttons": {
+    "refresh_button": {
+      "gpio": 5,
+      "label": "A",
+      "action": "refresh_photo",
+      "enabled": true
+    }
+  },
+  "button_debounce_delay": 0.5,
+  "daily_photo_script": "./daily_photo.py"
 }
