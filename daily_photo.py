@@ -20,6 +20,7 @@ class DailyPhotoDisplay:
         self.setup_directories()
         
         try:
+            self.logger.info("===== Initializing Daily Photo Display =====")
             self.display = auto()
             self.logger.info(f"Detected display: {self.display.colour} {self.display.resolution}")
         except Exception as e:
@@ -60,6 +61,20 @@ class DailyPhotoDisplay:
         cache_dir = self.config.get("image_cache_dir", "./cache")
         os.makedirs(cache_dir, exist_ok=True)
 
+    def get_file_extension(self, content_type):
+        """Get file extension from Content-Type header."""
+        mime_to_ext = {
+            'image/jpeg': '.jpg',
+            'image/jpg': '.jpg',
+            'image/png': '.png',
+            'image/gif': '.gif',
+            'image/webp': '.webp',
+            'image/bmp': '.bmp',
+            'image/tiff': '.tiff',
+            'image/svg+xml': '.svg'
+        }
+        return mime_to_ext.get(content_type.lower(), '.jpg')
+
     def download_image(self, url, max_retries=None):
         if max_retries is None:
             max_retries = self.config.get("retry_attempts", 3)
@@ -73,12 +88,14 @@ class DailyPhotoDisplay:
                 response = requests.get(url, timeout=30)
                 response.raise_for_status()
                 
-                if not response.headers.get('content-type', '').startswith('image/'):
-                    raise ValueError(f"URL did not return an image (content-type: {response.headers.get('content-type')})")
+                content_type = response.headers.get('content-type', '')
+                if not content_type.startswith('image/'):
+                    raise ValueError(f"URL did not return an image (content-type: {content_type})")
                 
                 cache_dir = self.config.get("image_cache_dir", "./cache")
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                image_path = os.path.join(cache_dir, f"daily_photo_{timestamp}.jpg")
+                file_extension = self.get_file_extension(content_type)
+                image_path = os.path.join(cache_dir, f"daily_photo_{timestamp}{file_extension}")
                 
                 with open(image_path, 'wb') as f:
                     f.write(response.content)
@@ -144,7 +161,7 @@ class DailyPhotoDisplay:
             self.logger.error(f"Failed to update display: {e}")
             raise
 
-    def cleanup_old_images(self, keep_count=5):
+    def cleanup_old_images(self, keep_count=10):
         try:
             cache_dir = self.config.get("image_cache_dir", "./cache")
             cache_path = Path(cache_dir)
@@ -153,7 +170,7 @@ class DailyPhotoDisplay:
                 return
             
             image_files = sorted(
-                [f for f in cache_path.glob("daily_photo_*.jpg")],
+                [f for f in cache_path.glob("daily_photo_*.*")],
                 key=lambda x: x.stat().st_mtime,
                 reverse=True
             )
