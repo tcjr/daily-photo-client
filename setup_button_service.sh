@@ -31,30 +31,30 @@ if [[ ! -f "$SCRIPT_DIR/daily-photo-button.service" ]]; then
     exit 1
 fi
 
-# Make button_monitor.py executable
+if [[ ! -f "$SCRIPT_DIR/run_button_monitor.sh" ]]; then
+    echo "Error: run_button_monitor.sh not found in $SCRIPT_DIR"
+    exit 1
+fi
+
+# Make scripts executable
 chmod +x "$SCRIPT_DIR/button_monitor.py"
-echo "Made button_monitor.py executable"
+chmod +x "$SCRIPT_DIR/run_button_monitor.sh"
+echo "Made scripts executable"
 
 # Update the service file with the correct paths
 SERVICE_FILE="$SCRIPT_DIR/daily-photo-button.service"
 TEMP_SERVICE="/tmp/daily-photo-button.service"
 
-# Determine the correct Python executable
-if [[ -f "$SCRIPT_DIR/venv/bin/python" ]]; then
-    PYTHON_EXEC="$SCRIPT_DIR/venv/bin/python"
-elif [[ -f "$SCRIPT_DIR/venv/bin/python3" ]]; then
-    PYTHON_EXEC="$SCRIPT_DIR/venv/bin/python3"
-else
-    PYTHON_EXEC="$(which python3)"
-fi
+# Use the wrapper script instead of direct Python execution
+WRAPPER_SCRIPT="$SCRIPT_DIR/run_button_monitor.sh"
 
-echo "Using Python executable: $PYTHON_EXEC"
+echo "Using wrapper script: $WRAPPER_SCRIPT"
 
 # Replace placeholder paths and user with actual values
 sed -e "s|/home/pi/daily-photo-client|$SCRIPT_DIR|g" \
     -e "s|User=pi|User=$CURRENT_USER|g" \
     -e "s|Group=pi|Group=$CURRENT_USER|g" \
-    -e "s|/home/pi/daily-photo-client/venv/bin/python /home/pi/daily-photo-client/button_monitor.py|$PYTHON_EXEC $SCRIPT_DIR/button_monitor.py|g" \
+    -e "s|/home/pi/daily-photo-client/venv/bin/python /home/pi/daily-photo-client/button_monitor.py|$WRAPPER_SCRIPT|g" \
     "$SERVICE_FILE" > "$TEMP_SERVICE"
 
 # Install the service file
