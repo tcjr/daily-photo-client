@@ -4,26 +4,18 @@ After=network.target
 Wants=network.target
 
 [Service]
-Type=simple
 User=pi
 Group=pi
 WorkingDirectory=/home/pi/daily-photo-client
 ExecStart=/home/pi/daily-photo-client/run_button_monitor.sh
-Restart=always
-RestartSec=10
+Restart=on-failure
+RestartSec=15
 StandardOutput=journal
 StandardError=journal
 
 # Environment variables
 Environment=PYTHONPATH=/home/pi/daily-photo-client
 Environment=PYTHONUNBUFFERED=1
-
-# Security settings
-NoNewPrivileges=true
-PrivateTmp=true
-ProtectSystem=strict
-ProtectHome=true
-ReadWritePaths=/home/pi/daily-photo-client
 
 [Install]
 WantedBy=multi-user.target
