@@ -1,46 +1,17 @@
 # Button Setup Guide for Daily Photo Frame
 
-This guide explains how to add a physical button to your Raspberry Pi picture frame that allows you to manually refresh the daily photo on demand.
+This guide explains how to configure the 4 built-in buttons on your picture frame hardware to control various functions, including manually refreshing the daily photo on demand.
 
-## Hardware Requirements
+## Hardware Overview
 
-- Momentary push button (normally open)
-- 10kΩ pull-up resistor (optional - software pull-up is used)
-- Jumper wires
-- Breadboard or direct soldering
+Your picture frame hardware includes **4 pre-wired buttons** that are already connected to the Raspberry Pi GPIO pins:
 
-## GPIO Pin Configuration
+- **Button A** - GPIO 5 (Pin 29)
+- **Button B** - GPIO 6 (Pin 31) 
+- **Button C** - GPIO 16 (Pin 36)
+- **Button D** - GPIO 24 (Pin 18)
 
-The button monitor is configured to use **GPIO 5** (Button A) by default, which corresponds to:
-- **Physical Pin 29** on the Raspberry Pi header
-- **BCM GPIO 5**
-
-### Available GPIO Pins (Inky Impression Compatible)
-
-According to the Pimoroni example, these pins are available:
-- **GPIO 5** (Pin 29) - Button A ✅ *Default*
-- **GPIO 6** (Pin 31) - Button B
-- **GPIO 16** (Pin 36) - Button C (GPIO 25 for 13.3" displays)
-- **GPIO 24** (Pin 18) - Button D
-
-## Wiring Instructions
-
-### Simple Wiring (Recommended)
-```
-Button Pin 1 ──── GPIO 5 (Pin 29)
-Button Pin 2 ──── Ground (Pin 30 or any GND pin)
-```
-
-The software uses internal pull-up resistors, so no external resistor is required.
-
-### With External Pull-up Resistor (Optional)
-```
-3.3V (Pin 1) ──── 10kΩ Resistor ──── GPIO 5 (Pin 29)
-                                  │
-                              Button Pin 1
-                                  │
-                              Button Pin 2 ──── Ground (Pin 30)
-```
+All buttons are wired with proper pull-up resistors and are ready to use with the button monitoring service.
 
 ## Software Installation
 
@@ -57,6 +28,15 @@ The software uses internal pull-up resistors, so no external resistor is require
 3. **View logs:**
    ```bash
    sudo journalctl -u daily-photo-button.service -f
+   ```
+
+4. **Test all buttons:**
+   ```bash
+   # Stop the service temporarily to test manually
+   sudo systemctl stop daily-photo-button.service
+   python3 button_monitor.py
+   # Press each button to verify detection, then Ctrl+C to exit
+   sudo systemctl start daily-photo-button.service
    ```
 
 ## Configuration
@@ -87,9 +67,9 @@ The button configuration is stored in `config.json`:
 - **button_debounce_delay**: Minimum time between button presses (seconds)
 - **daily_photo_script**: Path to the daily photo script
 
-### Adding Multiple Buttons
+### Using All 4 Buttons
 
-You can configure multiple buttons for different actions:
+You can configure all 4 hardware buttons for different actions:
 
 ```json
 {
@@ -100,15 +80,29 @@ You can configure multiple buttons for different actions:
       "action": "refresh_photo",
       "enabled": true
     },
-    "future_button": {
+    "button_b": {
       "gpio": 6,
       "label": "B", 
+      "action": "future_action",
+      "enabled": false
+    },
+    "button_c": {
+      "gpio": 16,
+      "label": "C",
+      "action": "future_action", 
+      "enabled": false
+    },
+    "button_d": {
+      "gpio": 24,
+      "label": "D",
       "action": "future_action",
       "enabled": false
     }
   }
 }
 ```
+
+Currently only the `refresh_photo` action is implemented. Additional actions can be added to the `button_monitor.py` service as needed.
 
 ## Testing
 
@@ -135,10 +129,10 @@ You can configure multiple buttons for different actions:
 ## Troubleshooting
 
 ### Button Not Detected
-- Check wiring connections
-- Verify GPIO pin number in config.json
+- Verify GPIO pin number in config.json matches your hardware
 - Check if another service is using the GPIO pin
 - Run `gpioinfo` to see GPIO status
+- Ensure the button monitoring service has proper GPIO permissions
 
 ### Service Won't Start
 - Check logs: `sudo journalctl -u daily-photo-button.service`
@@ -181,11 +175,20 @@ sudo systemctl status daily-photo-button.service
 sudo journalctl -u daily-photo-button.service -f
 ```
 
-## Physical Installation Tips
+## Button Functions
 
-1. **Button Placement**: Mount the button in an accessible location on your frame
-2. **Wire Management**: Use ribbon cable or thin wires to minimize bulk
-3. **Strain Relief**: Secure wires to prevent disconnection from movement
-4. **Weatherproofing**: If outdoors, ensure connections are protected from moisture
+With your 4 pre-wired buttons, you can implement various frame control functions:
 
-The button monitor service will automatically start on boot and continuously monitor for button presses, triggering photo refreshes as needed.
+- **Button A (GPIO 5)**: Photo refresh (currently implemented)
+- **Button B (GPIO 6)**: Available for future features
+- **Button C (GPIO 16)**: Available for future features  
+- **Button D (GPIO 24)**: Available for future features
+
+Potential future button functions could include:
+- Display brightness control
+- Sleep/wake display
+- Cycle through recent photos
+- Network status display
+- Configuration mode
+
+The button monitor service will automatically start on boot and continuously monitor all configured buttons for presses.

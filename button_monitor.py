@@ -38,6 +38,24 @@ class ButtonMonitor:
                     "label": "A",
                     "action": "refresh_photo",
                     "enabled": True
+                },
+                "button_b": {
+                    "gpio": 6,
+                    "label": "B",
+                    "action": "future_action",
+                    "enabled": False
+                },
+                "button_c": {
+                    "gpio": 16,
+                    "label": "C",
+                    "action": "future_action",
+                    "enabled": False
+                },
+                "button_d": {
+                    "gpio": 24,
+                    "label": "D",
+                    "action": "future_action",
+                    "enabled": False
                 }
             },
             "button_debounce_delay": 0.5,
@@ -64,7 +82,7 @@ class ButtonMonitor:
     
     def setup_gpio(self):
         try:
-            self.logger.info("Setting up GPIO for button monitoring")
+            self.logger.info("Setting up GPIO for pre-wired frame buttons")
             
             # Get enabled buttons from config
             buttons_config = self.config.get("buttons", {})

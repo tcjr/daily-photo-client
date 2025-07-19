@@ -12,6 +12,24 @@
       "label": "A",
       "action": "refresh_photo",
       "enabled": true
+    },
+    "button_b": {
+      "gpio": 6,
+      "label": "B",
+      "action": "future_action",
+      "enabled": false
+    },
+    "button_c": {
+      "gpio": 16,
+      "label": "C",
+      "action": "future_action",
+      "enabled": false
+    },
+    "button_d": {
+      "gpio": 24,
+      "label": "D",
+      "action": "future_action",
+      "enabled": false
     }
   },
   "button_debounce_delay": 0.5,
