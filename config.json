@@ -1,0 +1,9 @@
+{
+  "image_url": "https://placehold.co/800x480/orange/white.png?text=Hello.",
+  "display_type": "auto",
+  "log_level": "INFO",
+  "retry_attempts": 3,
+  "retry_delay": 5,
+  "image_cache_dir": "./cache",
+  "log_file": "./logs/daily-photo.log"
+}
