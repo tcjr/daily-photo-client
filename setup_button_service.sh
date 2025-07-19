@@ -54,7 +54,6 @@ echo "Using wrapper script: $WRAPPER_SCRIPT"
 sed -e "s|/home/pi/daily-photo-client|$SCRIPT_DIR|g" \
     -e "s|User=pi|User=$CURRENT_USER|g" \
     -e "s|Group=pi|Group=$CURRENT_USER|g" \
-    -e "s|/home/pi/daily-photo-client/venv/bin/python /home/pi/daily-photo-client/button_monitor.py|$WRAPPER_SCRIPT|g" \
     "$SERVICE_FILE" > "$TEMP_SERVICE"
 
 # Install the service file
