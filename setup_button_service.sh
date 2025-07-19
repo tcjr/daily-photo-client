@@ -54,7 +54,7 @@ echo "Using Python executable: $PYTHON_EXEC"
 sed -e "s|/home/pi/daily-photo-client|$SCRIPT_DIR|g" \
     -e "s|User=pi|User=$CURRENT_USER|g" \
     -e "s|Group=pi|Group=$CURRENT_USER|g" \
-    -e "s|/home/pi/daily-photo-client/venv/bin/python|$PYTHON_EXEC|g" \
+    -e "s|/home/pi/daily-photo-client/venv/bin/python /home/pi/daily-photo-client/button_monitor.py|$PYTHON_EXEC $SCRIPT_DIR/button_monitor.py|g" \
     "$SERVICE_FILE" > "$TEMP_SERVICE"
 
 # Install the service file
