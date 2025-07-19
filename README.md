@@ -30,7 +30,7 @@ A Python application for displaying daily photos on Pimoroni Inky Impression 7.3
 ### 2. Clone and Install
 
 ```bash
-git clone https://github.com/yourusername/daily-photo-client.git
+git clone https://github.com/tcjr/daily-photo-client.git
 cd daily-photo-client
 chmod +x install.sh
 ./install.sh
@@ -67,24 +67,26 @@ python3 daily_photo.py
 
 ## Configuration Options
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `image_url` | HTTP endpoint returning daily image | Required |
-| `display_type` | Display detection method | `"auto"` |
-| `log_level` | Logging verbosity | `"INFO"` |
-| `retry_attempts` | Download retry count | `3` |
-| `retry_delay` | Seconds between retries | `5` |
-| `image_cache_dir` | Local image storage | `"./cache"` |
-| `log_file` | Log file location | `"./logs/daily-photo.log"` |
+| Option            | Description                         | Default                    |
+| ----------------- | ----------------------------------- | -------------------------- |
+| `image_url`       | HTTP endpoint returning daily image | Required                   |
+| `display_type`    | Display detection method            | `"auto"`                   |
+| `log_level`       | Logging verbosity                   | `"INFO"`                   |
+| `retry_attempts`  | Download retry count                | `3`                        |
+| `retry_delay`     | Seconds between retries             | `5`                        |
+| `image_cache_dir` | Local image storage                 | `"./cache"`                |
+| `log_file`        | Log file location                   | `"./logs/daily-photo.log"` |
 
 ## Image Requirements
 
 Your HTTP endpoint should return:
+
 - Valid image formats (JPEG, PNG, etc.)
 - Any resolution (will be automatically resized)
 - Content-Type header indicating image
 
 The system will:
+
 - Resize images to fit 800x480 display
 - Maintain aspect ratio
 - Center images with white background
@@ -93,12 +95,14 @@ The system will:
 ## Logging
 
 Logs are written to both file and console:
+
 - Application logs: `./logs/daily-photo.log`
 - Cron logs: `./logs/cron.log`
 
 ## Troubleshooting
 
 ### Display Not Detected
+
 ```bash
 # Check SPI/I2C are enabled
 sudo raspi-config
@@ -111,11 +115,13 @@ sudo reboot
 ```
 
 ### Network Issues
+
 - Check WiFi connection
 - Verify image URL is accessible
 - Check firewall settings
 
 ### Permission Issues
+
 ```bash
 # Ensure scripts are executable
 chmod +x daily_photo.py setup_cron.sh install.sh
