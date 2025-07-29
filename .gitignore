@@ -47,5 +47,5 @@ cache/
 .DS_Store
 Thumbs.db
 
-# Config (optional - remove if you want to track config)
-# config.json
+# Local config file (use config.json.template as base)
+config.json

@@ -38,6 +38,12 @@ chmod +x install.sh
 
 ### 3. Configure
 
+Copy the template and customize your settings:
+
+```bash
+cp config.json.template config.json
+```
+
 Edit `config.json` with your image server URL:
 
 ```json
@@ -51,6 +57,8 @@ Edit `config.json` with your image server URL:
   "log_file": "./logs/daily-photo.log"
 }
 ```
+
+**Note:** `config.json` is ignored by git to prevent deployment conflicts. Always use `config.json.template` as your starting point.
 
 ### 4. Test
 
@@ -147,15 +155,18 @@ crontab -l
 
 ```
 daily-photo-client/
-├── daily_photo.py      # Main application
-├── config.json         # Configuration
-├── requirements.txt    # Python dependencies
-├── install.sh         # Installation script
-├── setup_cron.sh      # Cron job setup
-├── README.md          # This file
-├── venv/              # Python virtual environment
-├── logs/              # Log files
-└── cache/             # Downloaded images
+├── daily_photo.py         # Main application
+├── button_monitor.py      # Button monitoring service
+├── config.json.template   # Configuration template
+├── config.json           # Local configuration (git-ignored)
+├── requirements.txt      # Python dependencies
+├── install.sh           # Installation script
+├── setup_cron.sh        # Cron job setup
+├── setup_button_service.sh # Button service setup
+├── README.md            # This file
+├── venv/                # Python virtual environment
+├── logs/                # Log files
+└── cache/               # Downloaded images
 ```
 
 ## License

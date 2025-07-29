@@ -59,6 +59,7 @@ class ButtonMonitor:
                 }
             },
             "button_debounce_delay": 0.5,
+            "button_reset_timeout": 2.0,
             "daily_photo_script": "./daily_photo.py",
             "log_level": "INFO",
             "log_file": "./logs/button-monitor.log"
@@ -225,25 +226,16 @@ class ButtonMonitor:
                     # Reset button state after debounce delay to allow new presses
                     # This runs in a separate check to prevent immediate re-triggering
                     
-                # Check for button releases (reset states for buttons that should be released)
+                # Reset button states after timeout to allow new presses
                 current_time = time.time()
+                button_reset_timeout = self.config.get("button_reset_timeout", 2.0)
                 debug_logging = self.config.get("button_debug_logging", False)
                 for gpio_number in list(button_states.keys()):
                     if button_states[gpio_number] and gpio_number in last_press_time:
-                        if current_time - last_press_time[gpio_number] > debounce_delay:
-                            # Read current GPIO state to see if button is still pressed
-                            try:
-                                offset = self.offsets[self.gpio_numbers.index(gpio_number)]
-                                current_gpio_state = self.request.get_value(offset)
-                                # If GPIO is high (button released), reset state
-                                if current_gpio_state == 1:  # Pull-up means 1 = released, 0 = pressed
-                                    button_states[gpio_number] = False
-                                    if debug_logging:
-                                        self.logger.info(f"GPIO {gpio_number}: Button released, ready for new press")
-                            except Exception as e:
-                                if debug_logging:
-                                    self.logger.info(f"GPIO {gpio_number}: Could not read state, resetting: {e}")
-                                button_states[gpio_number] = False
+                        if current_time - last_press_time[gpio_number] > button_reset_timeout:
+                            button_states[gpio_number] = False
+                            if debug_logging:
+                                self.logger.info(f"GPIO {gpio_number}: Button state reset after {button_reset_timeout}s timeout")
                     
         except KeyboardInterrupt:
             self.logger.info("Button monitor stopped by user")
