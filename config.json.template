@@ -1,5 +1,5 @@
 {
-  "image_url": "https://placehold.co/800x480/orange/white.png?text=Hello.",
+  "image_url": "https://placehold.co/800x480/blue/white.png?text=Howdy.",
   "display_type": "auto",
   "log_level": "INFO",
   "retry_attempts": 3,
