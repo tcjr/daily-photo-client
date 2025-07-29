@@ -33,6 +33,7 @@
     }
   },
   "button_debounce_delay": 1.0,
+  "button_reset_timeout": 2.0,
   "daily_photo_script": "./daily_photo.py",
   "button_debug_logging": false
 }
